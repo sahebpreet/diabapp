@@ -1,0 +1,11 @@
+{
+  "name": "Diabetore",
+  "description": "Your app to store diabetes records",
+  "launch_path": "/indexdiab.html",
+  "orientation": ["portrait"],
+  "developer": {
+    "name": "Abhishek Jain",
+    "url": "http://buildingfirefoxos.com"
+  },
+  "default_locale": "en"
+}
