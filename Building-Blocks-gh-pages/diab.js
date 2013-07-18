@@ -1,8 +1,10 @@
+
 $(document).ready(function() 
-{
+{	
 		var db;
 		var storeName="diab";
 		//var indexedDB = (window.indexedDB || window.mozIndexedDB);
+		$("#main").hide();
 		var openDb=function()
 		{
 			var request=indexedDB.open("diabetore",2);
@@ -27,11 +29,7 @@ $(document).ready(function()
 				var store = db.createObjectStore(storeName, {keyPath: 'date'});
 				var dateIndex = store.createIndex("date", "date",{unique: true});
   
-				// Populate with initial data.
-				store.put({date: "june 1 2013",pre:70,post:70});
-				store.put({date: "june 2 2013",pre:71,post:87});
-				store.put({date: "june 3 2013",pre:72,post: 76});
-				store.put({date: "june 8 2013",pre:73,post:75});
+							
 			};   
 		};
 		
@@ -58,12 +56,12 @@ $(document).ready(function()
 			}
 			req.onsuccess=function(evt)
 			{
-				console.log("****Insertion in DB successful!!****");
-				alert("entry successfully added");
+				alert("Addition successful");
+				
 			};
 			req.onerror=function(evt)
 			{
-				console.log("Could not insert into DB");
+				alert("!Could not insert into DB");
 			};
 			
 		}
@@ -71,7 +69,6 @@ $(document).ready(function()
 		function getItems(date)
 		{	
 			console.log("retrieval started from db");
-			console.log("in getItems date is: "+date);
 			var hdate=new Date();
 			
 			var store=getObjectStore(storeName,"readonly");
@@ -102,32 +99,42 @@ $(document).ready(function()
 			{
 				var cursor = event.target.result;
 				if (cursor) 
-				{
-					console.log("Date" + cursor.value.date + "  Pre: " + cursor.value.pre +"  Post: " + cursor.value.post);
+				{	$("#main").slideDown();
+					console.log("Date " + cursor.value.date + "  Pre: " + cursor.value.pre +"  Post: " + cursor.value.post);
+					var row= ( cursor.value.date + "  Pre: " + cursor.value.pre +"  Post: " + cursor.value.post);
+					$('.records').append('<div class="row" style="border:1px solid white;border-radius:3rem;text-align:center">'+row+'</div>');
 					cursor.continue();
 				}
 				else
 				{
 					alert("No more entries!");
 				}
+				$("#back").click(function(){
+					$('#main').hide();
+				});
+				
 			};
 			
 		}
-		 
+		
+		
 		function clearObjectStore(store_name)
 		{
-			var store = getObjectStore(storeName, 'readwrite');
+			var store = getObjectStore(store_name, 'readwrite');
 			var req = store.clear();
-			req.onsuccess = function(evt) {
-			alert("store cleared");
-			//displayActionSuccess("Store cleared");
-			//displayPubList(store);
-		};
-req.onerror = function (evt) {
-console.error("clearObjectStore:", evt.target.errorCode);
-displayActionFailure(this.error);
-};
-}
+			req.onsuccess = function(evt)
+			{
+				alert("ObjectStore Cleared..");
+			};
+			req.onerror = function (evt)
+			{
+				alert("! Object Store could not be cleared...");
+			};
+		}
+		
+		
+		
+		 
 
 		 $("#add").click(function(){
 				
@@ -154,12 +161,12 @@ displayActionFailure(this.error);
 			
 			var date=new Date().toDateString();
 			date = $('#date').val();
-			console.log("date entered is:"+ date);
-			/*if(!date)
+			
+			if(!date)
 				{
 					alert("required field missing..");
 					return;
-				}*/
+				}
 			getItems(date);
 		  });
 		  
@@ -167,33 +174,29 @@ displayActionFailure(this.error);
 		  {
 			
 				console.log("eventlistner called for showAll...");
-				console.log("showAll started...");
+							
 				showAll();
 			
 		  });
 		  
-		  $("#deleteall").click(function()
+		  $("#delete").click(function()
 		  {
 		  
-			console.log("eventlistner called for deleting all entries..");
+			console.log("eventlistner called for deleting..");
 			
-			var result=confirm ("do you really want to delete all the entries");
-			if (result==true)
+			var r=confirm("do you really want to clear everything..");
+			
+			if(r==true)
 			{
-				console.log("delete");
-				var date=new Date().toDateString();
-				date = $('#date').val();
-				console.log("date entered is:"+ date);
-				/*if(!date)
-					{
-						alert("required field missing..");
-						return;
-					}*/
-				clearObjectStore(date);
+				clearObjectStore(storeName);
 			}
 			else
-			alert("deletion process cancelled...");
-		});
+			{
+				return;
+			}
+			
+		  });
+		
         openDb();
         
 
